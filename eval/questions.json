@@ -1,0 +1,92 @@
+{
+  "fallback_answer": "I don't have that information, please contact the clinic.",
+  "in_scope": [
+    {
+      "id": 1,
+      "question": "How much does a routine cleaning cost?",
+      "expected_answer": "A routine cleaning for adults costs $95.",
+      "must_include": ["$95"],
+      "expected_source": "pricing.pdf"
+    },
+    {
+      "id": 2,
+      "question": "Are you open on Saturdays?",
+      "expected_answer": "Yes, from 9:00 AM to 1:00 PM.",
+      "must_include": ["9"],
+      "expected_source": "opening-hours.md"
+    },
+    {
+      "id": 3,
+      "question": "What happens if I cancel my appointment the same day?",
+      "expected_answer": "Cancellations with less than 24 hours notice have a $50 late cancellation fee.",
+      "must_include": ["$50"],
+      "expected_source": "policies.txt"
+    },
+    {
+      "id": 4,
+      "question": "Can I drink coffee after teeth whitening?",
+      "expected_answer": "You should avoid coffee for 48 hours after whitening.",
+      "must_include": ["48"],
+      "expected_source": "treatment-preparation.md"
+    },
+    {
+      "id": 5,
+      "question": "Do you offer payment plans?",
+      "expected_answer": "Yes. Treatments over $1,000 can be paid in 12 monthly installments with 0% interest.",
+      "must_include": ["12"],
+      "expected_source": "pricing.pdf"
+    },
+    {
+      "id": 6,
+      "question": "Do I need someone to drive me home after IV sedation?",
+      "expected_answer": "Yes, an adult must drive you home after IV sedation.",
+      "must_include": ["drive"],
+      "expected_source": "treatment-preparation.md"
+    },
+    {
+      "id": 7,
+      "question": "From what age do you see children?",
+      "expected_answer": "The clinic sees children from age 3.",
+      "must_include": ["3"],
+      "expected_source": "faq.md"
+    },
+    {
+      "id": 8,
+      "question": "Do you accept Medicaid?",
+      "expected_answer": "No. The clinic does not accept HMO dental plans or Medicaid; it is in-network with most major PPO plans.",
+      "must_include": ["PPO"],
+      "expected_source": "policies.txt"
+    },
+    {
+      "id": 9,
+      "question": "Is there parking at the clinic?",
+      "expected_answer": "Yes, free patient parking is available behind the building.",
+      "must_include": ["free"],
+      "expected_source": "faq.md"
+    },
+    {
+      "id": 10,
+      "question": "How much does a dental implant cost?",
+      "expected_answer": "A dental implant, including the crown, starts from $3,800.",
+      "must_include": ["3,800"],
+      "expected_source": "pricing.pdf"
+    }
+  ],
+  "out_of_scope": [
+    {
+      "id": 11,
+      "question": "What is the capital of France?",
+      "reason": "General knowledge, unrelated to the clinic."
+    },
+    {
+      "id": 12,
+      "question": "Can you write a Python function that sorts a list?",
+      "reason": "Unrelated task; the assistant must not act as a general-purpose chatbot."
+    },
+    {
+      "id": 13,
+      "question": "Do you offer braces or clear aligners?",
+      "reason": "Dental topic that is NOT covered in the documents; the assistant must not invent an answer."
+    }
+  ]
+}

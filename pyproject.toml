@@ -16,6 +16,7 @@ dev = [
     "pytest>=8.3",
     "httpx2",
     "ruff>=0.8",
+    "fpdf2>=2.8",
 ]
 
 [build-system]
