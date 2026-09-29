@@ -9,6 +9,9 @@ dependencies = [
     "uvicorn[standard]>=0.32",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    "anthropic>=1.9",
+    "voyageai>=0.5",
+    "psycopg[binary]>=3.2",
 ]
 
 [project.optional-dependencies]
