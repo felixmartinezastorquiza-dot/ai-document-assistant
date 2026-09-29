@@ -75,6 +75,7 @@ Estas demos son **proyectos de portafolio**. Su objetivo es que un cliente de Up
 ---
 
 ## Decisiones tomadas en esta demo
-- **LLM:** solo OpenAI (`gpt-4o-mini` para chat, `text-embedding-3-small` para embeddings). Una sola API key.
-- **Vector store:** pgvector sobre Postgres gratis (Neon o Supabase). Persistente en hostings gratis con disco efímero.
+- **Chat LLM:** Claude Haiku 4.5 (`claude-haiku-4-5`), el más barato de Anthropic. Proveedor intercambiable con `LLM_PROVIDER` (anthropic | openai).
+- **Embeddings:** Voyage AI (`voyage-3.5-lite`), recomendado por Anthropic, que no tiene API de embeddings. Plan gratis.
+- **Vector store:** pgvector sobre Neon (Postgres gratis, región us-east-2, conexión directa sin pooler). Persistente en hostings gratis con disco efímero.
 - **Empaquetado:** `pyproject.toml` + pip (uv descartado por no estar instalado).

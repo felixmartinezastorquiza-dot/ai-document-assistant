@@ -1,6 +1,7 @@
 """Application settings loaded from environment variables (and a local .env file)."""
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,9 +13,15 @@ class Settings(BaseSettings):
     app_name: str = "AI Document Assistant"
     log_level: str = "INFO"
 
+    # Chat model (answers questions). Switch provider without code changes.
+    llm_provider: Literal["anthropic", "openai"] = "anthropic"
+    chat_model: str = "claude-haiku-4-5"
+    anthropic_api_key: SecretStr | None = None
     openai_api_key: SecretStr | None = None
-    chat_model: str = "gpt-4o-mini"
-    embedding_model: str = "text-embedding-3-small"
+
+    # Embedding model (turns text into vectors for semantic search).
+    embedding_model: str = "voyage-3.5-lite"
+    voyage_api_key: SecretStr | None = None
 
     database_url: SecretStr | None = None
 
