@@ -25,7 +25,11 @@ app = FastAPI(title=settings.app_name)
 
 
 class ChatRequest(BaseModel):
-    question: str = Field(min_length=1, max_length=settings.max_question_chars)
+    question: str = Field(
+        min_length=1,
+        max_length=settings.max_question_chars,
+        examples=["Can I drink coffee after teeth whitening?"],
+    )
 
 
 class CitationOut(BaseModel):
