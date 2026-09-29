@@ -75,7 +75,15 @@ Estas demos son **proyectos de portafolio**. Su objetivo es que un cliente de Up
 ---
 
 ## Decisiones tomadas en esta demo
-- **Chat LLM:** Claude Haiku 4.5 (`claude-haiku-4-5`), el más barato de Anthropic. Proveedor intercambiable con `LLM_PROVIDER` (anthropic | openai).
-- **Embeddings:** Voyage AI (`voyage-3.5-lite`), recomendado por Anthropic, que no tiene API de embeddings. Plan gratis.
-- **Vector store:** pgvector sobre Neon (Postgres gratis, región us-east-2, conexión directa sin pooler). Persistente en hostings gratis con disco efímero.
-- **Empaquetado:** `pyproject.toml` + pip (uv descartado por no estar instalado).
+- **Chat LLM:** Claude Haiku 4.5 (`claude-haiku-4-5`). Proveedor intercambiable con `LLM_PROVIDER` (anthropic | openai; OpenAI implementado pero no probado).
+- **Embeddings:** Voyage AI (`voyage-3.5-lite`, 1024 dims). Plan gratis sin tarjeta = 3 requests/min: embeddings siempre en lote.
+- **Vector store:** pgvector en Neon (us-east-2, conexión directa sin pooler), índice HNSW coseno. Tabla `chunks` con `is_sample` para separar docs de ejemplo y subidos.
+- **Chunking propio por títulos** (~1000 chars), sin LangChain.
+- **Respuestas:** salida estructurada (`answer_found`, `answer`, `source_ids`); las citas se arman desde los resultados de búsqueda; mensaje de fallback fijo en código.
+- **Prompt:** describe un "document assistant" (no "asistente de BrightSmile"), si no Claude rechaza preguntas sobre documentos subidos.
+- **Frontend:** HTML + CSS + JS simple servido por FastAPI; texto del servidor siempre con `textContent`.
+- **Protección:** rate limit por IP en memoria (10 preguntas/min, 5 subidas/hora), cuota diaria global, `TRUSTED_PROXY_HOPS` para la IP real detrás de Render.
+- **Subidas:** prefijo `uploaded-`, expiran a las 24 h, `/reset` borra solo `is_sample = false`.
+- **Eval:** `eval.py` = 13/13 (2026-09-29).
+- **Dev local:** el proyecto está en OneDrive y `uvicorn --reload` se queda pegado; correr sin `--reload`.
+- **Empaquetado:** `pyproject.toml` + pip; Docker con `pip install -e .` para que `data/` resuelva junto al paquete.

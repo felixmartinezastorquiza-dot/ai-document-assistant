@@ -1,0 +1,28 @@
+# Render Blueprint: deploy with "New > Blueprint" and point it at this repository.
+# Secrets marked `sync: false` are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: ai-document-assistant
+    runtime: docker
+    plan: free
+    region: ohio
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: VOYAGE_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: LLM_PROVIDER
+        value: anthropic
+      - key: CHAT_MODEL
+        value: claude-haiku-4-5
+      - key: EMBEDDING_MODEL
+        value: voyage-3.5-lite
+      # Render's proxy appends the client address to X-Forwarded-For.
+      - key: TRUSTED_PROXY_HOPS
+        value: "1"
+      - key: AUTHOR_NAME
+        value: Felix Martinez
