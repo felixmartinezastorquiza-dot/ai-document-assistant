@@ -15,10 +15,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.config import get_settings  # noqa: E402
 from app.documents import load_directory  # noqa: E402
 from app.embeddings import Embedder  # noqa: E402
-from app.ingestion import ingest_documents  # noqa: E402
+from app.ingestion import SAMPLE_DOCS_DIR, ingest_documents  # noqa: E402
 from app.vector_store import connect, count_chunks, init_schema  # noqa: E402
-
-SAMPLE_DOCS_DIR = Path(__file__).resolve().parent.parent / "data" / "sample_docs"
 
 
 def main() -> None:

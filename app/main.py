@@ -2,19 +2,25 @@
 
 import html
 import logging
+import math
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.config import Settings, get_settings
 from app.embeddings import Embedder
+from app.ingestion import ensure_sample_documents
 from app.llm import ChatModel, LLMUnavailableError, create_chat_model
 from app.rag import Retriever, answer_question
+from app.rate_limit import DailyQuota, SlidingWindowRateLimiter, client_ip
 from app.retrieval import PgVectorRetriever, RetrievalUnavailableError
 from app.uploads import (
     DocumentIndexer,
@@ -34,8 +40,59 @@ logger = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
-app = FastAPI(title=settings.app_name)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    if settings.auto_ingest_samples:
+        try:
+            await run_in_threadpool(ensure_sample_documents, settings, get_embedder())
+        except Exception:  # the app should still start and report errors per request
+            logger.exception("Could not index sample documents on startup")
+    yield
+
+
+app = FastAPI(
+    title=settings.app_name,
+    description="RAG assistant that answers questions from a clinic's documents, with sources.",
+    lifespan=lifespan,
+)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+chat_limiter = SlidingWindowRateLimiter(settings.rate_limit_chat_per_minute, window_seconds=60)
+upload_limiter = SlidingWindowRateLimiter(settings.rate_limit_uploads_per_hour, window_seconds=3600)
+chat_quota = DailyQuota(settings.max_daily_chat_requests)
+upload_quota = DailyQuota(settings.max_daily_uploads)
+
+
+def enforce_limits(
+    request: Request, limiter: SlidingWindowRateLimiter, quota: DailyQuota, action: str
+) -> None:
+    retry_after = limiter.check(client_ip(request, settings.trusted_proxy_hops))
+    if retry_after is not None:
+        seconds = math.ceil(retry_after)
+        raise HTTPException(
+            status_code=429,
+            detail=f"Too many {action} in a short time. Please wait {seconds} seconds.",
+            headers={"Retry-After": str(seconds)},
+        )
+    if not quota.consume():
+        raise HTTPException(
+            status_code=429,
+            detail="This demo has reached its daily usage limit. Please come back tomorrow.",
+        )
+
+
+def limit_chat(request: Request) -> None:
+    enforce_limits(request, chat_limiter, chat_quota, "questions")
+
+
+def limit_uploads(request: Request) -> None:
+    enforce_limits(request, upload_limiter, upload_quota, "uploads")
+
+
+def reset_rate_limits() -> None:
+    for guard in (chat_limiter, upload_limiter, chat_quota, upload_quota):
+        guard.reset()
 
 
 class ChatRequest(BaseModel):
@@ -123,7 +180,7 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/chat")
+@app.post("/chat", dependencies=[Depends(limit_chat)])
 def chat(
     request: ChatRequest,
     retriever: Annotated[Retriever, Depends(get_retriever)],
@@ -144,7 +201,7 @@ def chat(
     )
 
 
-@app.post("/documents")
+@app.post("/documents", dependencies=[Depends(limit_uploads)])
 async def upload_document(
     file: UploadFile,
     indexer: Annotated[DocumentIndexer, Depends(get_indexer)],
@@ -153,7 +210,8 @@ async def upload_document(
     data = await file.read(settings.max_upload_bytes + 1)  # never read more than needed
     try:
         document = validate_upload(file.filename or "document.txt", data, settings)
-        chunks = indexer.add(document)
+        # Indexing blocks on network calls: run it off the event loop.
+        chunks = await run_in_threadpool(indexer.add, document)
     except UploadRejectedError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except IndexingUnavailableError as exc:

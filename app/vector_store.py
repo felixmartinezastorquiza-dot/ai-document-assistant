@@ -97,6 +97,11 @@ def delete_uploaded(conn: psycopg.Connection, older_than_hours: float | None = N
     return cursor.rowcount
 
 
+def count_sample_chunks(conn: psycopg.Connection) -> int:
+    row = conn.execute("SELECT count(*) FROM chunks WHERE is_sample").fetchone()
+    return int(row[0]) if row else 0
+
+
 def count_chunks(conn: psycopg.Connection) -> int:
     row = conn.execute("SELECT count(*) FROM chunks").fetchone()
     return int(row[0]) if row else 0

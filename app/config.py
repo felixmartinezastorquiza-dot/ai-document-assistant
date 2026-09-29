@@ -36,6 +36,16 @@ class Settings(BaseSettings):
     max_upload_chars: int = 60_000  # caps embedding cost per upload
     upload_ttl_hours: float = 24  # uploads are deleted automatically after this
 
+    # Abuse protection for the public demo
+    rate_limit_chat_per_minute: int = 10  # per visitor IP
+    rate_limit_uploads_per_hour: int = 5  # per visitor IP
+    max_daily_chat_requests: int = 300  # global ceiling on API spend
+    max_daily_uploads: int = 50
+    trusted_proxy_hops: int = 0  # 0 locally; 1 behind a single reverse proxy (e.g. Render)
+
+    # Index the sample documents on startup if the database has none (fresh deploys)
+    auto_ingest_samples: bool = True
+
     # Author signature shown in the page footer (empty links are hidden)
     author_name: str = "Felix Martinez"
     author_title: str = "Python & AI Integration Developer"

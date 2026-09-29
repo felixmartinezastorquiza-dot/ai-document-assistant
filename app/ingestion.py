@@ -1,15 +1,30 @@
 """Ingestion pipeline: documents -> chunks -> embeddings -> vector store."""
 
 import logging
+from pathlib import Path
 
 import psycopg
 
 from app.chunking import Chunk, chunk_text
-from app.documents import Document
+from app.config import Settings
+from app.documents import Document, load_directory
 from app.embeddings import Embedder
-from app.vector_store import replace_document
+from app.vector_store import connect, count_sample_chunks, init_schema, replace_document
 
 logger = logging.getLogger(__name__)
+
+SAMPLE_DOCS_DIR = Path(__file__).resolve().parent.parent / "data" / "sample_docs"
+
+
+def ensure_sample_documents(settings: Settings, embedder: Embedder) -> None:
+    """Create the schema and index the sample documents if the database has none yet."""
+    with connect(settings) as conn:
+        init_schema(conn, settings.embedding_dimensions)
+        if count_sample_chunks(conn) > 0:
+            logger.info("Sample documents already indexed")
+            return
+        total = ingest_documents(conn, embedder, load_directory(SAMPLE_DOCS_DIR), is_sample=True)
+        logger.info("Indexed sample documents on startup (%d chunks)", total)
 
 
 def ingest_documents(
