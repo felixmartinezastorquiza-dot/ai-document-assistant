@@ -2,6 +2,8 @@
 
 **A chatbot that answers customer questions from a company's own documents, cites the exact source for every answer, and says "I don't know" instead of making things up.**
 
+[![CI](https://github.com/felixmartinezastorquiza-dot/ai-document-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/felixmartinezastorquiza-dot/ai-document-assistant/actions/workflows/ci.yml)
+
 **Live demo:** _coming soon_ · [API docs](#run-locally) · Evaluation: **13/13 passing**
 
 ![Chat answering a question with its cited source, and declining a question the documents don't cover](docs/screenshot.png)
