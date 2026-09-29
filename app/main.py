@@ -2,9 +2,12 @@
 
 import logging
 from functools import lru_cache
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
@@ -21,7 +24,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
 app = FastAPI(title=settings.app_name)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 class ChatRequest(BaseModel):
@@ -51,6 +57,12 @@ def get_retriever() -> Retriever:
 @lru_cache
 def get_chat_model() -> ChatModel:
     return create_chat_model(settings)
+
+
+@app.get("/", include_in_schema=False)
+def chat_page() -> FileResponse:
+    """The web chat UI."""
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.get("/health")

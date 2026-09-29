@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BrightSmile Dental · AI Assistant</title>
+  <meta name="description" content="AI assistant that answers patient questions from a dental clinic's own documents, with cited sources.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦷</text></svg>">
+</head>
+<body>
+  <div class="demo-banner" role="note">
+    Demo project with sample data · BrightSmile Dental is a fictional clinic
+  </div>
+
+  <main class="chat-card">
+    <header class="chat-header">
+      <div class="avatar" aria-hidden="true">🦷</div>
+      <div>
+        <h1>BrightSmile Dental</h1>
+        <p class="status"><span class="dot" aria-hidden="true"></span>Virtual assistant · answers from clinic documents</p>
+      </div>
+    </header>
+
+    <section id="messages" class="messages" aria-live="polite">
+      <div class="message assistant">
+        <div class="bubble">Hi! 👋 I can answer questions about our <strong>prices</strong>, <strong>opening hours</strong>, <strong>treatment preparation</strong> and <strong>policies</strong>. Every answer shows the document it comes from.</div>
+      </div>
+    </section>
+
+    <div id="suggestions" class="suggestions" aria-label="Example questions">
+      <button type="button" class="chip">How much is a routine cleaning?</button>
+      <button type="button" class="chip">Are you open on Saturdays?</button>
+      <button type="button" class="chip">Can I drink coffee after whitening?</button>
+      <button type="button" class="chip">Do you accept Medicaid?</button>
+      <button type="button" class="chip">¿Atienden a niños?</button>
+      <button type="button" class="chip">Do you offer braces?</button>
+    </div>
+
+    <form id="chat-form" class="composer" autocomplete="off">
+      <label for="question" class="visually-hidden">Your question</label>
+      <input id="question" name="question" type="text" maxlength="500"
+             placeholder="Ask a question… (English or Spanish)" required>
+      <button id="send" type="submit" aria-label="Send question">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/>
+        </svg>
+      </button>
+    </form>
+  </main>
+
+  <footer class="footer">
+    Portfolio demo · Built with FastAPI, Claude, Voyage AI and pgvector ·
+    <a href="/docs">API docs</a>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
