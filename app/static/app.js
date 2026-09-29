@@ -6,6 +6,10 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("question");
 const sendButton = document.getElementById("send");
 const chips = document.querySelectorAll(".chip");
+const attachButton = document.getElementById("attach");
+const fileInput = document.getElementById("file-input");
+const resetButton = document.getElementById("reset");
+const MAX_UPLOAD_BYTES = 2_000_000;
 
 function scrollToBottom() {
   messages.scrollTop = messages.scrollHeight;
@@ -57,6 +61,8 @@ function showTyping() {
 function setBusy(busy) {
   input.disabled = busy;
   sendButton.disabled = busy;
+  attachButton.disabled = busy;
+  resetButton.disabled = busy;
   chips.forEach((chip) => (chip.disabled = busy));
   if (!busy) input.focus();
 }
@@ -98,6 +104,64 @@ async function ask(question) {
     setBusy(false);
   }
 }
+
+async function upload(file) {
+  if (file.size > MAX_UPLOAD_BYTES) {
+    addMessage("assistant", "⚠️ The file is too large. Maximum size is 2 MB.", "error");
+    return;
+  }
+  setBusy(true);
+  const status = addMessage("system", `📄 Reading "${file.name}"…`);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch("/documents", { method: "POST", body: formData });
+    const body = await response.json().catch(() => null);
+    status.remove();
+
+    if (!response.ok) {
+      addMessage("assistant", `⚠️ ${errorMessageFor(response.status, body)}`, "error");
+      return;
+    }
+    addMessage("system", `✅ "${file.name}" is ready (${body.chunks} sections indexed).`);
+    addMessage("assistant", "Great! Ask me anything about your document. I'll cite it in my answers.");
+  } catch {
+    status.remove();
+    addMessage("assistant", "⚠️ Can't reach the server. Check your connection and try again.", "error");
+  } finally {
+    fileInput.value = "";
+    setBusy(false);
+  }
+}
+
+async function resetDemo() {
+  if (!confirm("Remove all uploaded documents and start over? The clinic's documents are kept.")) {
+    return;
+  }
+  setBusy(true);
+  try {
+    const response = await fetch("/reset", { method: "POST" });
+    const body = await response.json().catch(() => null);
+    if (!response.ok) {
+      addMessage("assistant", `⚠️ ${errorMessageFor(response.status, body)}`, "error");
+      return;
+    }
+    // Clear the conversation, keeping only the welcome message.
+    [...messages.children].slice(1).forEach((message) => message.remove());
+    addMessage("system", "🔄 Demo reset. Uploaded documents were removed.");
+  } catch {
+    addMessage("assistant", "⚠️ Can't reach the server. Check your connection and try again.", "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+attachButton.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length) upload(fileInput.files[0]);
+});
+resetButton.addEventListener("click", resetDemo);
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();

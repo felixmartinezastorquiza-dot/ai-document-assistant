@@ -18,6 +18,8 @@ def test_home_serves_chat_page_with_demo_notice() -> None:
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "Demo project with sample data" in response.text
+    assert "Built by" in response.text
+    assert "AUTHOR_SIGNATURE" not in response.text
 
 
 def test_static_assets_are_served() -> None:

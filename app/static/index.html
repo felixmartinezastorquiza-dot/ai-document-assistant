@@ -19,10 +19,13 @@
   <main class="chat-card">
     <header class="chat-header">
       <div class="avatar" aria-hidden="true">🦷</div>
-      <div>
+      <div class="header-text">
         <h1>BrightSmile Dental</h1>
         <p class="status"><span class="dot" aria-hidden="true"></span>Virtual assistant · answers from clinic documents</p>
       </div>
+      <button id="reset" type="button" class="reset-button" title="Remove uploaded documents and start over">
+        Reset demo
+      </button>
     </header>
 
     <section id="messages" class="messages" aria-live="polite">
@@ -41,6 +44,13 @@
     </div>
 
     <form id="chat-form" class="composer" autocomplete="off">
+      <input id="file-input" type="file" accept=".pdf,.md,.txt" hidden>
+      <button id="attach" type="button" class="attach-button"
+              aria-label="Upload a document" title="Upload your own PDF, Markdown or TXT file">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M16.5 6.5v10a4.5 4.5 0 0 1-9 0V5a3 3 0 0 1 6 0v10.5a1.5 1.5 0 0 1-3 0V6.5H9v9a3 3 0 0 0 6 0V5a4.5 4.5 0 0 0-9 0v11.5a6 6 0 0 0 12 0v-10z"/>
+        </svg>
+      </button>
       <label for="question" class="visually-hidden">Your question</label>
       <input id="question" name="question" type="text" maxlength="500"
              placeholder="Ask a question… (English or Spanish)" required>
@@ -50,11 +60,15 @@
         </svg>
       </button>
     </form>
+    <p class="upload-hint">
+      📎 Try it with your own document (PDF, MD or TXT, max 2 MB). Uploads are visible to other
+      visitors and deleted after 24 h, so please don't upload private files.
+    </p>
   </main>
 
   <footer class="footer">
-    Portfolio demo · Built with FastAPI, Claude, Voyage AI and pgvector ·
-    <a href="/docs">API docs</a>
+    <p class="signature"><!-- AUTHOR_SIGNATURE --></p>
+    <p class="tech">FastAPI · Claude · Voyage AI · pgvector · <a href="/docs">API docs</a></p>
   </footer>
 
   <script src="/static/app.js"></script>

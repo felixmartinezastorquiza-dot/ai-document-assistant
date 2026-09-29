@@ -61,7 +61,7 @@ body {
 .chat-card {
   width: calc(100% - 32px);
   max-width: 720px;
-  height: calc(100vh - 110px);
+  height: calc(100vh - 130px);
   min-height: 480px;
   margin: 20px 16px 8px;
   display: flex;
@@ -82,7 +82,22 @@ body {
   color: #fff;
 }
 
-.chat-header > div:last-child { min-width: 0; }
+.header-text { min-width: 0; flex: 1; }
+
+.reset-button {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.reset-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.15); }
 .chat-header h1 { margin: 0; font-size: 18px; font-weight: 700; }
 .status { margin: 0; font-size: 13px; opacity: 0.9; display: flex; align-items: center; gap: 6px; }
 .dot { flex-shrink: 0; }
@@ -228,6 +243,31 @@ body {
 }
 
 .composer button:hover:not(:disabled) { background: var(--brand-dark); }
+
+.composer .attach-button {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.composer .attach-button:hover:not(:disabled) { background: var(--brand-soft); color: var(--brand); }
+
+.upload-hint {
+  margin: 0;
+  padding: 0 20px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.message.system { align-self: center; max-width: 95%; }
+.system .bubble {
+  background: var(--brand-soft);
+  color: var(--text);
+  font-size: 13px;
+  border-radius: 999px;
+  padding: 6px 14px;
+  text-align: center;
+}
 button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .footer {
@@ -237,6 +277,9 @@ button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
   text-align: center;
 }
 
+.footer p { margin: 2px 0; }
+.footer .signature { font-size: 13px; color: var(--text); }
+.footer .signature a { color: var(--brand); font-weight: 500; }
 .footer a { color: inherit; }
 
 .visually-hidden {
@@ -255,8 +298,10 @@ button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
     border-radius: 0;
     border-left: none;
     border-right: none;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 110px);
   }
+  .upload-hint { padding-left: 14px; padding-right: 14px; }
+  .reset-button { padding: 6px 10px; font-size: 12px; }
   .messages, .suggestions { padding-left: 14px; padding-right: 14px; }
   .suggestions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .chip { font-size: 12.5px; white-space: nowrap; flex-shrink: 0; }

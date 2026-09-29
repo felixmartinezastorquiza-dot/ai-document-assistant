@@ -31,6 +31,18 @@ class Settings(BaseSettings):
     max_answer_tokens: int = 400  # hard cap on tokens generated per answer
     max_question_chars: int = 500
 
+    # Visitor uploads
+    max_upload_bytes: int = 2_000_000  # 2 MB
+    max_upload_chars: int = 60_000  # caps embedding cost per upload
+    upload_ttl_hours: float = 24  # uploads are deleted automatically after this
+
+    # Author signature shown in the page footer (empty links are hidden)
+    author_name: str = "Felix Martinez"
+    author_title: str = "Python & AI Integration Developer"
+    author_upwork_url: str = ""
+    author_github_url: str = ""
+    author_linkedin_url: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

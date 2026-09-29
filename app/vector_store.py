@@ -58,7 +58,8 @@ def replace_document(
     if len(chunks) != len(embeddings):
         raise ValueError("Each chunk needs exactly one embedding")
     with conn.transaction():
-        conn.execute("DELETE FROM chunks WHERE source = %s", (source,))
+        # Scoped by is_sample so an upload can never overwrite a sample document.
+        conn.execute("DELETE FROM chunks WHERE source = %s AND is_sample = %s", (source, is_sample))
         with conn.cursor() as cur:
             cur.executemany(
                 "INSERT INTO chunks (source, chunk_index, content, embedding, is_sample) "
@@ -80,6 +81,20 @@ def search(
         (str(query_embedding), str(query_embedding), limit),
     ).fetchall()
     return [SearchResult(source=r[0], content=r[1], similarity=float(r[2])) for r in rows]
+
+
+def delete_uploaded(conn: psycopg.Connection, older_than_hours: float | None = None) -> int:
+    """Delete visitor-uploaded chunks (all, or only expired ones). Sample docs are kept."""
+    if older_than_hours is None:
+        cursor = conn.execute("DELETE FROM chunks WHERE is_sample = FALSE")
+    else:
+        cursor = conn.execute(
+            "DELETE FROM chunks WHERE is_sample = FALSE "
+            "AND created_at < now() - make_interval(secs => %s)",
+            (older_than_hours * 3600,),
+        )
+    conn.commit()
+    return cursor.rowcount
 
 
 def count_chunks(conn: psycopg.Connection) -> int:
