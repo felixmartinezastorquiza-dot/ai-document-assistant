@@ -21,9 +21,15 @@ class Settings(BaseSettings):
 
     # Embedding model (turns text into vectors for semantic search).
     embedding_model: str = "voyage-3.5-lite"
+    embedding_dimensions: int = 1024
     voyage_api_key: SecretStr | None = None
 
     database_url: SecretStr | None = None
+
+    # RAG behaviour and cost guards
+    retrieval_top_k: int = 4  # how many chunks the model gets as context
+    max_answer_tokens: int = 400  # hard cap on tokens generated per answer
+    max_question_chars: int = 500
 
 
 @lru_cache
