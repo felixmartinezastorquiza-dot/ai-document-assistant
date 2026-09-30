@@ -21,8 +21,10 @@ services:
         value: claude-haiku-4-5
       - key: EMBEDDING_MODEL
         value: voyage-3.5-lite
-      # Render's proxy appends the client address to X-Forwarded-For.
+      # Requests reach the app through Cloudflare and Render's load balancer, so
+      # X-Forwarded-For ends with "<client>, <cloudflare>, <render internal>".
+      # The real client is the 3rd entry from the right (verified in production).
       - key: TRUSTED_PROXY_HOPS
-        value: "1"
+        value: "3"
       - key: AUTHOR_NAME
         value: Felix Martinez

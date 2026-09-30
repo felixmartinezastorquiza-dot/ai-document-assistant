@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     rate_limit_uploads_per_hour: int = 5  # per visitor IP
     max_daily_chat_requests: int = 300  # global ceiling on API spend
     max_daily_uploads: int = 50
-    trusted_proxy_hops: int = 0  # 0 locally; 1 behind a single reverse proxy (e.g. Render)
+    trusted_proxy_hops: int = 0  # 0 locally; 3 on Render (Cloudflare + load balancer)
 
     # Index the sample documents on startup if the database has none (fresh deploys)
     auto_ingest_samples: bool = True

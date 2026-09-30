@@ -79,3 +79,10 @@ def test_chat_endpoint_returns_429_after_the_per_ip_limit() -> None:
 
     assert statuses[:10] == [200] * 10
     assert statuses[10] == 429
+
+
+def test_client_ip_behind_cloudflare_and_render_ignores_spoofed_entries() -> None:
+    # Real header shape observed in production (client, Cloudflare, Render internal).
+    request = make_request("6.6.6.6,190.0.2.10, 162.159.114.82, 10.24.128.209")
+
+    assert client_ip(request, trusted_proxy_hops=3) == "190.0.2.10"
