@@ -174,6 +174,15 @@ def chat_page() -> HTMLResponse:
     return HTMLResponse(render_chat_page())
 
 
+@app.get("/debug-ip", include_in_schema=False)
+def debug_ip(request: Request) -> dict[str, str | None]:
+    """TEMPORARY: inspect which proxy headers the host sets. Remove after checking."""
+    names = ["x-forwarded-for", "true-client-ip", "cf-connecting-ip", "x-real-ip", "forwarded"]
+    info: dict[str, str | None] = {name: request.headers.get(name) for name in names}
+    info["socket"] = request.client.host if request.client else None
+    return info
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Liveness check used by Docker and the hosting platform."""
